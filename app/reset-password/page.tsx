@@ -21,7 +21,6 @@ export default function ResetPasswordPage() {
       await resetPassword(email);
       setSuccess(true);
     } catch (err) {
-      console.error(err);
       setError("Erro ao enviar link. Verifique o email informado.");
     } finally {
       setLoading(false);
