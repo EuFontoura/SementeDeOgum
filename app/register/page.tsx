@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AuthLayout from "@/components/layout/AuthLayout";
@@ -30,10 +30,13 @@ export default function RegisterPage() {
 
   const passwordChecks = checkPassword(password);
 
-  if (user && currentRole) {
-    router.replace(currentRole === "teacher" ? "/teacher" : "/student");
-    return null;
-  }
+  useEffect(() => {
+    if (user && currentRole) {
+      router.replace(currentRole === "teacher" ? "/teacher" : "/student");
+    }
+  }, [user, currentRole, router]);
+
+  if (user && currentRole) return null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

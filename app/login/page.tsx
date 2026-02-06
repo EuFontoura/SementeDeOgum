@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AuthLayout from "@/components/layout/AuthLayout";
@@ -18,10 +18,13 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  if (user && role) {
-    router.replace(role === "teacher" ? "/teacher" : "/student");
-    return null;
-  }
+  useEffect(() => {
+    if (user && role) {
+      router.replace(role === "teacher" ? "/teacher" : "/student");
+    }
+  }, [user, role, router]);
+
+  if (user && role) return null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
