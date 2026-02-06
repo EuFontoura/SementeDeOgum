@@ -85,6 +85,8 @@ export default function NewExamPage() {
 
     setCurrentQuestion(emptyQuestion());
     setEditingIndex(null);
+    
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function handleEditQuestion(index: number) {
@@ -410,7 +412,7 @@ export default function NewExamPage() {
                 <p className="text-center text-sm text-red-500">{error}</p>
               )}
 
-              <Button onClick={handleAddOrUpdateQuestion} className="w-full">
+              <Button onClick={handleAddOrUpdateQuestion} className="btn-primary">
                 {editingIndex !== null
                   ? "Salvar Alterações"
                   : "Adicionar Questão"}
