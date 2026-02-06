@@ -60,7 +60,8 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await signUp(email, password, name, role);
-    } catch {
+    } catch (err) {
+        console.error(err)
       setError("Erro ao criar conta. Tente novamente.");
     } finally {
       setLoading(false);
