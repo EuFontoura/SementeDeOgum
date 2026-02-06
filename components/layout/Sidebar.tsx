@@ -3,20 +3,26 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const links = [
-  { href: "/student", label: "Dashboard", icon: "📋" },
-  { href: "/student/profile", label: "Meu Perfil", icon: "👤" },
-];
+export type SidebarLink = {
+  href: string;
+  label: string;
+  icon: string;
+};
 
-export default function Sidebar() {
+type SidebarProps = {
+  links: SidebarLink[];
+  basePath: string;
+};
+
+export default function Sidebar({ links, basePath }: SidebarProps) {
   const pathname = usePathname();
 
   return (
     <aside className="fixed left-0 top-16 flex h-[calc(100vh-4rem)] w-56 flex-col gap-1 bg-green-900 p-3">
       {links.map((link) => {
         const isActive =
-          link.href === "/student"
-            ? pathname === "/student"
+          link.href === basePath
+            ? pathname === basePath
             : pathname.startsWith(link.href);
         return (
           <Link
