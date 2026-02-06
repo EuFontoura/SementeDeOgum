@@ -20,7 +20,8 @@ export default function ResetPasswordPage() {
     try {
       await resetPassword(email);
       setSuccess(true);
-    } catch {
+    } catch (err) {
+      console.error(err);
       setError("Erro ao enviar link. Verifique o email informado.");
     } finally {
       setLoading(false);
@@ -28,7 +29,10 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <AuthLayout title="Recuperar Senha" subtitle="Enviaremos um link para seu email">
+    <AuthLayout
+      title="Recuperar Senha"
+      subtitle="Enviaremos um link para seu email"
+    >
       {success ? (
         <div className="flex flex-col items-center gap-4">
           <p className="text-center text-sm font-medium text-green-500">
@@ -56,7 +60,7 @@ export default function ResetPasswordPage() {
             {error && (
               <p className="text-center text-sm text-red-500">{error}</p>
             )}
-            <Button type="submit" loading={loading} className="w-full">
+            <Button type="submit" loading={loading} className="btn-primary">
               Enviar link
             </Button>
           </form>
