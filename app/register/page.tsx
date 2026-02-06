@@ -140,27 +140,7 @@ export default function RegisterPage() {
           />
         )}
         {error && <p className="text-center text-sm text-red-500">{error}</p>}
-        <Button
-          type="submit"
-          loading={loading}
-          className="
-    w-full
-    bg-[#5b8b07]
-    text-white
-    font-semibold
-    tracking-wide
-    rounded-lg
-    py-3
-    transition-all
-    duration-200
-    hover:bg-[#336130]
-    focus:outline-none
-    focus:ring-2
-    focus:ring-[#9ec187]
-    active:bg-[#15311a]
-    disabled:opacity-70
-  "
-        >
+        <Button type="submit" className="btn-primary">
           Cadastrar
         </Button>
       </form>

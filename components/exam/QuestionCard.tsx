@@ -29,11 +29,13 @@ export default function QuestionCard({
         {question.text}
       </p>
       {question.imageBase64 && (
-        <img
-          src={question.imageBase64}
-          alt="Imagem da questão"
-          className="max-w-full rounded-lg"
-        />
+        <div className="flex justify-center">
+          <img
+            src={question.imageBase64}
+            alt="Imagem da questão"
+            className="max-w-sm rounded-lg"
+          />
+        </div>
       )}
       <div className="flex flex-col gap-2">
         {question.alternatives.map((alt) => {
@@ -42,7 +44,7 @@ export default function QuestionCard({
             <button
               key={alt.label}
               onClick={() => onSelectAnswer(alt.label)}
-              className={`flex items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition-colors ${
+              className={`flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition-colors ${
                 isSelected
                   ? "bg-green-500 text-white"
                   : "border border-green-200 bg-green-50 text-green-900 hover:bg-green-100"

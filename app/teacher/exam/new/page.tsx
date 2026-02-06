@@ -179,7 +179,7 @@ export default function NewExamPage() {
                   key={d}
                   type="button"
                   onClick={() => setDay(d)}
-                  className={`flex-1 rounded-lg py-2 font-medium transition-colors ${
+                  className={`flex-1 rounded-lg py-2 font-medium cursor-pointer transition-colors ${
                     day === d
                       ? "bg-green-500 text-white"
                       : "bg-green-50 text-green-500"
@@ -202,7 +202,7 @@ export default function NewExamPage() {
               setError("");
               setStep(2);
             }}
-            className="w-full"
+            className="btn-primary"
           >
             Próximo
           </Button>

@@ -28,7 +28,7 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`flex items-center justify-center gap-2 rounded-full px-6 py-2.5 font-semibold transition-colors ${variantStyles[variant]}`}
+      className={`flex cursor-pointer items-center justify-center gap-2 rounded-full px-6 py-2.5 font-semibold transition-colors disabled:cursor-not-allowed ${variantStyles[variant]}`}
       disabled={disabled || loading}
       {...props}
     >

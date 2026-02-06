@@ -358,3 +358,7 @@ types/
 | 7     | Phase 6 — Security | Small | Phase 3 + 4 |
 
 > **Phases 3 and 4 can be developed in parallel** after auth is complete.
+
+Things to fix
+- Allow teachers to view all created exams and each student's score
+- Show username instead of email in the navbar.
