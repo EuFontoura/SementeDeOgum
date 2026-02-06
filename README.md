@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Semente de Ogum — Simulado ENEM
 
-## Getting Started
+Plataforma web de simulados ENEM para o cursinho preparatório gratuito **Semente de Ogum**.
 
-First, run the development server:
+Alunos realizam simulados cronometrados no formato ENEM. Professores criam provas e analisam resultados.
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Linguagem:** TypeScript
+- **Estilização:** Tailwind CSS 4
+- **Tipografia:** Poppins (Google Fonts)
+- **Backend:** Firebase (Authentication + Firestore)
+- **Plano:** Firebase free tier
+
+## Começando
+
+### Pré-requisitos
+
+- Node.js 18+
+- Projeto Firebase com Authentication (Email/Password) e Firestore habilitados
+
+### Instalação
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Variáveis de ambiente
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Crie um arquivo `.env.local` na raiz do projeto:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_TEACHER_INVITE_CODE=
+```
 
-## Learn More
+A variável `NEXT_PUBLIC_TEACHER_INVITE_CODE` define o código de convite que professores precisam informar no cadastro.
 
-To learn more about Next.js, take a look at the following resources:
+### Executar
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run dev       # desenvolvimento
+npm run build     # build de produção
+npm run start     # servir build
+npm run lint      # linter
+npx tsc --noEmit  # type check
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Estrutura do Projeto
 
-## Deploy on Vercel
+```
+app/
+├── layout.tsx              # Layout raiz (Poppins, metadata, providers)
+├── page.tsx                # Landing page
+├── login/page.tsx          # Login
+├── register/page.tsx       # Cadastro (aluno/professor + código de convite)
+├── reset-password/page.tsx # Recuperação de senha
+├── student/                # Área do aluno (em desenvolvimento)
+└── teacher/                # Área do professor (em desenvolvimento)
+components/
+├── layout/
+│   ├── AuthLayout.tsx      # Layout das páginas de autenticação
+│   └── RouteGuard.tsx      # Proteção de rotas por role
+└── ui/
+    ├── Button.tsx           # Botão com variantes (primary, outlined, danger)
+    ├── Input.tsx            # Input com label e estado de erro
+    └── PasswordCriteria.tsx # Checklist visual de critérios de senha
+contexts/
+└── AuthContext.tsx          # Provider de autenticação (user, role, loading)
+lib/
+├── firebase.ts             # Inicialização do Firebase
+├── auth.ts                 # Helpers de autenticação (signUp, signIn, signOut, resetPassword)
+├── firestore.ts            # Helpers genéricos do Firestore (CRUD)
+└── validation.ts           # Validação de email, senha e código de convite
+types/
+├── user.ts                 # User, UserRole
+├── exam.ts                 # Exam, ExamDay, ExamStatus
+├── question.ts             # Question, Alternative
+└── result.ts               # Result, Answer, SubjectScore
+public/
+└── images/brand/logo/      # Logos da marca
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Funcionalidades
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Implementadas
+
+- [x] Identidade visual (paleta de cores, tipografia, logos)
+- [x] Autenticação (login, cadastro, recuperação de senha)
+- [x] Cadastro com seleção de role (Aluno / Professor)
+- [x] Código de convite para cadastro de professores
+- [x] Validação de email
+- [x] Critérios de senha forte (8+ chars, maiúscula, minúscula, número, especial)
+- [x] Proteção de rotas por role (RouteGuard)
+- [x] Tipos Firestore definidos (users, exams, questions, answers, results)
+
+### Em desenvolvimento
+
+- [ ] Área do aluno (dashboard, execução de simulado, resultados)
+- [ ] Área do professor (criação de provas, análise de resultados)
+- [ ] Timer de prova (5h30, auto-submit)
+- [ ] Upload de imagens em Base64
+- [ ] Regras de segurança do Firestore
+
+## Identidade Visual
+
+Baseada no [Manual de Identidade Visual](visual-identity.md) da marca.
+
+| Cor          | HEX       |
+| ------------ | --------- |
+| Verde Claro  | `#cce8b7` |
+| Verde Médio  | `#9ec187` |
+| Verde Folha  | `#5e914c` |
+| Verde Vivo   | `#5b8b07` |
+| Verde Forte  | `#336130` |
+| Verde Noite  | `#15311a` |
