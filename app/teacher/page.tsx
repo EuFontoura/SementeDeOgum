@@ -3,24 +3,38 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { getCollection, where } from "@/lib/firestore";
+import { getCollection } from "@/lib/firestore";
 import Badge from "@/components/ui/Badge";
 import type { Exam } from "@/types/exam";
+import type { Result } from "@/types/result";
+
+type ExamWithStats = Exam & {
+  studentCount: number;
+  questionCount: number;
+};
 
 export default function TeacherDashboard() {
   const { user } = useAuth();
-  const [exams, setExams] = useState<Exam[]>([]);
+  const [exams, setExams] = useState<ExamWithStats[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) return;
 
     async function fetchExams() {
-      const data = await getCollection<Exam>(
-        "exams",
-        where("createdBy", "==", user!.uid)
-      );
-      setExams(data);
+      const examsData = await getCollection<Exam>("exams");
+
+      const allResults = await getCollection<Result>("results");
+      const finishedResults = allResults.filter((r) => r.finishedAt);
+
+      const withStats: ExamWithStats[] = examsData.map((exam) => ({
+        ...exam,
+        studentCount: finishedResults.filter((r) => r.examId === exam.id)
+          .length,
+        questionCount: 0,
+      }));
+
+      setExams(withStats);
       setLoading(false);
     }
 
@@ -41,7 +55,7 @@ export default function TeacherDashboard() {
         <h1 className="text-2xl font-bold text-green-900">Meus Simulados</h1>
         <Link
           href="/teacher/exam/new"
-          className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700"
+          className="cursor-pointer rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700"
         >
           Criar Simulado
         </Link>
@@ -68,13 +82,31 @@ export default function TeacherDashboard() {
                   />
                 </div>
                 <p className="text-sm text-green-400">Dia {exam.day}</p>
+                {exam.status === "published" && (
+                  <p className="mt-1 text-sm text-green-700">
+                    {exam.studentCount}{" "}
+                    {exam.studentCount === 1
+                      ? "aluno concluiu"
+                      : "alunos concluíram"}
+                  </p>
+                )}
               </div>
-              <Link
-                href={`/teacher/exam/${exam.id}`}
-                className="text-sm font-medium text-green-500 transition-colors hover:text-green-700"
-              >
-                Gerenciar →
-              </Link>
+              <div className="flex items-center gap-3">
+                <Link
+                  href={`/teacher/exam/${exam.id}`}
+                  className="text-sm font-medium text-green-500 transition-colors hover:text-green-700"
+                >
+                  Detalhes →
+                </Link>
+                {exam.status === "published" && exam.studentCount > 0 && (
+                  <Link
+                    href={`/teacher/exam/${exam.id}/results`}
+                    className="text-sm font-medium text-green-700 transition-colors hover:text-green-900"
+                  >
+                    Ver Resultados →
+                  </Link>
+                )}
+              </div>
             </div>
           ))}
         </div>

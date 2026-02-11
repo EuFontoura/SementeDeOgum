@@ -15,18 +15,21 @@ import type { UserRole } from "@/types/user";
 type AuthState = {
   user: FirebaseUser | null;
   role: UserRole | null;
+  userName: string | null;
   loading: boolean;
 };
 
 const AuthContext = createContext<AuthState>({
   user: null,
   role: null,
+  userName: null,
   loading: true,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,11 +38,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(firebaseUser);
         const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
         if (userDoc.exists()) {
-          setRole(userDoc.data().role as UserRole);
+          const data = userDoc.data();
+          setRole(data.role as UserRole);
+          setUserName(data.name as string);
         }
       } else {
         setUser(null);
         setRole(null);
+        setUserName(null);
       }
       setLoading(false);
     });
@@ -48,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, role, loading }}>
+    <AuthContext.Provider value={{ user, role, userName, loading }}>
       {children}
     </AuthContext.Provider>
   );

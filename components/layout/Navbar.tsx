@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { signOut } from "@/lib/auth";
 
 export default function Navbar() {
-  const { user } = useAuth();
+  const { userName } = useAuth();
   const router = useRouter();
 
   async function handleSignOut() {
@@ -28,7 +28,7 @@ export default function Navbar() {
           />
         </Link>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-green-700">{user?.email}</span>
+          <span className="text-sm text-green-700">{userName}</span>
           <button
             onClick={handleSignOut}
             className="text-sm text-green-400 transition-colors hover:text-red-500"
