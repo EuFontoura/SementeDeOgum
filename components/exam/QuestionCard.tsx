@@ -44,16 +44,12 @@ export default function QuestionCard({
             <button
               key={alt.label}
               onClick={() => onSelectAnswer(alt.label)}
-              className={`flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition-colors ${
-                isSelected
-                  ? "bg-green-500 text-white"
-                  : "border border-green-200 bg-green-50 text-green-900 hover:bg-green-100"
-              }`}
+              className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition-colors bg-transparent text-black" 
             >
               <span
                 className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
                   isSelected
-                    ? "bg-white text-green-500"
+                    ? "bg-green-400 text-green-900"
                     : "bg-green-200 text-green-700"
                 }`}
               >

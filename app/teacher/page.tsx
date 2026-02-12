@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { getCollection } from "@/lib/firestore";
 import Badge from "@/components/ui/Badge";
+import Card from "@/components/ui/Card";
+import Skeleton from "@/components/ui/Skeleton";
 import type { Exam } from "@/types/exam";
 import type { Result } from "@/types/result";
 
@@ -43,8 +45,20 @@ export default function TeacherDashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-200 border-t-green-500" />
+      <div>
+        <div className="mb-6 flex items-center justify-between">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-10 w-36 rounded-lg" />
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Card key={i}>
+              <Skeleton className="mb-3 h-6 w-3/4" />
+              <Skeleton className="mb-2 h-4 w-1/4" />
+              <Skeleton className="h-4 w-1/2" />
+            </Card>
+          ))}
+        </div>
       </div>
     );
   }
@@ -67,9 +81,9 @@ export default function TeacherDashboard() {
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {exams.map((exam) => (
-            <div
+            <Card
               key={exam.id}
-              className="flex flex-col justify-between rounded-xl border border-green-100 bg-white p-6 shadow-sm"
+              className="flex flex-col justify-between"
             >
               <div className="mb-4">
                 <div className="mb-2 flex items-center justify-between">
@@ -107,7 +121,7 @@ export default function TeacherDashboard() {
                   </Link>
                 )}
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}

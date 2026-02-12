@@ -18,7 +18,7 @@ export default function Sidebar({ links, basePath }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-16 flex h-[calc(100vh-4rem)] w-56 flex-col gap-1 bg-green-900 p-3">
+    <aside className="fixed left-0 top-16 hidden h-[calc(100vh-4rem)] w-56 flex-col gap-1 bg-green-900 p-3 md:flex">
       {links.map((link) => {
         const isActive =
           link.href === basePath

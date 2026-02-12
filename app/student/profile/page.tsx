@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { getDocument, getCollection, where } from "@/lib/firestore";
+import Card from "@/components/ui/Card";
+import Skeleton from "@/components/ui/Skeleton";
 import type { User } from "@/types/user";
 import type { Result } from "@/types/result";
 
@@ -34,8 +36,25 @@ export default function StudentProfile() {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-200 border-t-green-500" />
+      <div className="flex flex-col gap-6">
+        <Skeleton className="h-8 w-48" />
+        <Card>
+          <Skeleton className="mb-4 h-6 w-32" />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i}>
+                <Skeleton className="mb-1 h-4 w-16" />
+                <Skeleton className="h-5 w-32" />
+              </div>
+            ))}
+          </div>
+        </Card>
+        <Card>
+          <Skeleton className="mb-4 h-6 w-48" />
+          {[1, 2].map((i) => (
+            <Skeleton key={i} className="mb-2 h-14 w-full rounded-lg" />
+          ))}
+        </Card>
       </div>
     );
   }
@@ -44,7 +63,7 @@ export default function StudentProfile() {
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold text-green-900">Meu Perfil</h1>
 
-      <div className="rounded-xl border border-green-100 bg-white p-6 shadow-sm">
+      <Card>
         <h2 className="mb-4 text-lg font-semibold text-green-900">
           Meus Dados
         </h2>
@@ -62,9 +81,9 @@ export default function StudentProfile() {
             <p className="text-green-900">Aluno</p>
           </div>
         </div>
-      </div>
+      </Card>
 
-      <div className="rounded-xl border border-green-100 bg-white p-6 shadow-sm">
+      <Card>
         <h2 className="mb-4 text-lg font-semibold text-green-900">
           Histórico de Simulados
         </h2>
@@ -93,7 +112,7 @@ export default function StudentProfile() {
             ))}
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

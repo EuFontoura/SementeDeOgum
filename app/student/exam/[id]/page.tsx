@@ -5,12 +5,14 @@ import { useParams, useRouter } from "next/navigation";
 import { doc, setDoc, getDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/contexts/ToastContext";
 import { useExam } from "@/hooks/useExam";
 import { useTimer } from "@/hooks/useTimer";
 import Timer from "@/components/exam/Timer";
 import QuestionCard from "@/components/exam/QuestionCard";
 import QuestionNav from "@/components/exam/QuestionNav";
 import Button from "@/components/ui/Button";
+import Modal from "@/components/ui/Modal";
 import type { SubjectScore } from "@/types/result";
 
 export default function ExamPage() {
@@ -18,6 +20,7 @@ export default function ExamPage() {
   const router = useRouter();
   const examId = params.id as string;
   const { user } = useAuth();
+  const { showToast } = useToast();
   const { exam, questions, answers, setAnswers, loading } = useExam(
     examId,
     user?.uid
@@ -100,8 +103,9 @@ export default function ExamPage() {
       { merge: true }
     );
 
+    showToast("Prova finalizada!");
     router.replace(`/student/result/${examId}`);
-  }, [user, submitting, questions, answers, examId, router]);
+  }, [user, submitting, questions, answers, examId, router, showToast]);
 
   useEffect(() => {
     if (isTimeUp && startedAtMs) {
@@ -112,21 +116,51 @@ export default function ExamPage() {
   async function handleSelectAnswer(questionId: string, label: string) {
     if (!user) return;
 
-    const answerRef = doc(db, "answers", `${examId}_${user.uid}_${questionId}`);
-    await setDoc(answerRef, {
-      examId,
-      userId: user.uid,
-      questionId,
-      selectedAnswer: label,
-      answeredAt: Timestamp.now(),
-    });
+    try {
+      const answerRef = doc(
+        db,
+        "answers",
+        `${examId}_${user.uid}_${questionId}`
+      );
+      await setDoc(answerRef, {
+        examId,
+        userId: user.uid,
+        questionId,
+        selectedAnswer: label,
+        answeredAt: Timestamp.now(),
+      });
 
-    setAnswers((prev) => {
-      const next = new Map(prev);
-      next.set(questionId, label);
-      return next;
-    });
+      setAnswers((prev) => {
+        const next = new Map(prev);
+        next.set(questionId, label);
+        return next;
+      });
+
+      showToast("Resposta salva");
+    } catch {
+      showToast("Erro ao salvar resposta", "error");
+    }
   }
+
+  const currentQuestion = questions[currentIndex];
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (showFinishModal) return;
+      const key = e.key.toLowerCase();
+      if (["a", "b", "c", "d", "e"].includes(key) && currentQuestion) {
+        handleSelectAnswer(currentQuestion.id, key.toUpperCase());
+      }
+      if (e.key === "ArrowLeft") {
+        setCurrentIndex((i) => Math.max(0, i - 1));
+      }
+      if (e.key === "ArrowRight") {
+        setCurrentIndex((i) => Math.min(questions.length - 1, i + 1));
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentQuestion, questions.length, showFinishModal]);
 
   if (loading || !exam || !startedAtMs) {
     return (
@@ -135,8 +169,6 @@ export default function ExamPage() {
       </div>
     );
   }
-
-  const currentQuestion = questions[currentIndex];
   const answeredSet = new Set(
     questions
       .map((q, i) => (answers.has(q.id) ? i : -1))
@@ -145,7 +177,7 @@ export default function ExamPage() {
 
   return (
     <div className="flex min-h-screen bg-white">
-      <aside className="fixed left-0 top-0 flex h-screen w-64 flex-col justify-between border-r border-green-100 bg-white p-4">
+      <aside className="fixed left-0 top-0 hidden h-screen w-64 flex-col justify-between border-r border-green-100 bg-white p-4 md:flex">
         <QuestionNav
           totalQuestions={questions.length}
           currentIndex={currentIndex}
@@ -155,13 +187,13 @@ export default function ExamPage() {
         <Button
           variant="danger"
           onClick={() => setShowFinishModal(true)}
-          className="w-full"
+          className={`w-full ${answeredSet.size == questions.length ? "btn-primary" : ""}`}
         >
           Finalizar Prova
         </Button>
       </aside>
 
-      <main className="ml-64 flex-1 p-8">
+      <main className="flex-1 p-8 md:ml-64">
         <div className="mx-auto max-w-3xl">
           {currentQuestion && (
             <QuestionCard
@@ -204,37 +236,34 @@ export default function ExamPage() {
         onToggle={() => setTimerMinimized((m) => !m)}
       />
 
-      {showFinishModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-            <h2 className="mb-2 text-lg font-bold text-green-900">
-              Finalizar Prova?
-            </h2>
-            <p className="mb-4 text-sm text-green-400">
-              Você respondeu {answeredSet.size} de {questions.length} questões.
-              {answeredSet.size < questions.length &&
-                " Questões não respondidas serão consideradas erradas."}
-            </p>
-            <div className="flex gap-3">
-              <Button
-                variant="outlined"
-                onClick={() => setShowFinishModal(false)}
-                className="flex-1"
-              >
-                Voltar
-              </Button>
-              <Button
-                variant="danger"
-                loading={submitting}
-                onClick={submitExam}
-                className="flex-1"
-              >
-                Confirmar
-              </Button>
-            </div>
-          </div>
+      <Modal
+        open={showFinishModal}
+        onClose={() => setShowFinishModal(false)}
+        title="Finalizar Prova?"
+      >
+        <p className="mb-4 text-sm text-green-400">
+          Você respondeu {answeredSet.size} de {questions.length} questões.
+          {answeredSet.size < questions.length &&
+            " Questões não respondidas serão consideradas erradas."}
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="outlined"
+            onClick={() => setShowFinishModal(false)}
+            className="flex-1"
+          >
+            Voltar
+          </Button>
+          <Button
+            variant="danger"
+            loading={submitting}
+            onClick={submitExam}
+            className="flex-1"
+          >
+            Confirmar
+          </Button>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

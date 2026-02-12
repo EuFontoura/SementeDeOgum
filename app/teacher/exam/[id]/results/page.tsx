@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { getDocument, getCollection, where } from "@/lib/firestore";
+import Card from "@/components/ui/Card";
+import Skeleton from "@/components/ui/Skeleton";
 import type { Exam } from "@/types/exam";
 import type { Result } from "@/types/result";
 import type { User } from "@/types/user";
@@ -48,8 +50,27 @@ export default function ExamResultsPage() {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-200 border-t-green-500" />
+      <div className="mx-auto max-w-3xl">
+        <Skeleton className="mb-4 h-4 w-20" />
+        <Skeleton className="mb-6 h-8 w-64" />
+        <Card className="p-0">
+          <div className="hidden md:grid grid-cols-4 border-b border-green-100 px-6 py-3">
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="mx-auto h-3 w-16" />
+            <Skeleton className="mx-auto h-3 w-8" />
+            <Skeleton className="ml-auto h-3 w-16" />
+          </div>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="border-b border-green-50 px-6 py-4 last:border-0">
+              <div className="grid grid-cols-4 gap-4">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="mx-auto h-4 w-12" />
+                <Skeleton className="mx-auto h-4 w-10" />
+                <Skeleton className="ml-auto h-4 w-20" />
+              </div>
+            </div>
+          ))}
+        </Card>
       </div>
     );
   }
@@ -70,7 +91,8 @@ export default function ExamResultsPage() {
           Nenhum aluno concluiu este simulado ainda.
         </p>
       ) : (
-        <div className="rounded-xl border border-green-100 bg-white shadow-sm">
+        <>
+        <Card className="hidden p-0 md:block">
           <div className="grid grid-cols-4 border-b border-green-100 px-6 py-3 text-xs font-semibold uppercase text-green-400">
             <span>Aluno</span>
             <span className="text-center">Acertos</span>
@@ -133,7 +155,68 @@ export default function ExamResultsPage() {
               </div>
             );
           })}
+        </Card>
+        <div className="flex flex-col gap-4 md:hidden">
+          {results.map((r) => {
+            const pct = Math.round((r.score / r.totalQuestions) * 100);
+            const isExpanded = expandedId === r.id;
+            return (
+              <Card key={r.id}>
+                <button
+                  onClick={() =>
+                    setExpandedId(isExpanded ? null : r.id)
+                  }
+                  className="w-full text-left"
+                >
+                  <p className="mb-1 font-medium text-green-900">
+                    {r.userName}
+                  </p>
+                  <div className="flex items-center gap-4 text-sm">
+                    <span className="text-green-700">
+                      {r.score}/{r.totalQuestions}
+                    </span>
+                    <span
+                      className={`font-semibold ${
+                        pct >= 70
+                          ? "text-green-500"
+                          : pct >= 40
+                            ? "text-yellow-500"
+                            : "text-red-500"
+                      }`}
+                    >
+                      {pct}%
+                    </span>
+                    <span className="ml-auto text-green-400">
+                      {r.finishedAt?.toDate().toLocaleDateString("pt-BR")}
+                    </span>
+                  </div>
+                </button>
+                {isExpanded && r.subjectBreakdown.length > 0 && (
+                  <div className="mt-3 border-t border-green-50 pt-3">
+                    <p className="mb-2 text-xs font-semibold text-green-700">
+                      Por Matéria
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {r.subjectBreakdown.map((s) => (
+                        <div
+                          key={s.subject}
+                          className="flex justify-between text-xs"
+                        >
+                          <span className="text-green-700">{s.subject}</span>
+                          <span className="font-medium text-green-900">
+                            {s.correct}/{s.total} (
+                            {Math.round((s.correct / s.total) * 100)}%)
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </Card>
+            );
+          })}
         </div>
+        </>
       )}
     </div>
   );

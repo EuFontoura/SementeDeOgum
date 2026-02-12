@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import Card from "@/components/ui/Card";
+import Skeleton from "@/components/ui/Skeleton";
 import { getDocument, getCollection, where, orderBy } from "@/lib/firestore";
 import type { Result } from "@/types/result";
 import type { Question } from "@/types/question";
@@ -53,8 +55,27 @@ export default function ResultPage() {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-200 border-t-green-500" />
+      <div className="flex flex-col gap-6">
+        <Card>
+          <Skeleton className="mb-4 h-7 w-48" />
+          <Skeleton className="mb-2 h-12 w-32" />
+          <Skeleton className="h-4 w-64" />
+        </Card>
+        <Card>
+          <Skeleton className="mb-4 h-6 w-48" />
+          {[1, 2].map((i) => (
+            <div key={i} className="mb-3">
+              <Skeleton className="mb-1 h-4 w-full" />
+              <Skeleton className="h-3 w-full rounded-full" />
+            </div>
+          ))}
+        </Card>
+        <Card>
+          <Skeleton className="mb-4 h-6 w-48" />
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="mb-2 h-16 w-full rounded-lg" />
+          ))}
+        </Card>
       </div>
     );
   }
@@ -71,7 +92,7 @@ export default function ResultPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="rounded-xl border border-green-100 bg-white p-6 shadow-sm">
+      <Card>
         <h1 className="mb-4 text-xl font-bold text-green-900">
           {exam?.title ?? "Simulado"}
         </h1>
@@ -91,9 +112,9 @@ export default function ResultPage() {
             minute: "2-digit",
           })}
         </p>
-      </div>
+      </Card>
 
-      <div className="rounded-xl border border-green-100 bg-white p-6 shadow-sm">
+      <Card>
         <h2 className="mb-4 text-lg font-semibold text-green-900">
           Desempenho por Matéria
         </h2>
@@ -120,9 +141,9 @@ export default function ResultPage() {
             );
           })}
         </div>
-      </div>
+      </Card>
 
-      <div className="rounded-xl border border-green-100 bg-white p-6 shadow-sm">
+      <Card>
         <h2 className="mb-4 text-lg font-semibold text-green-900">
           Revisão das Questões
         </h2>
@@ -167,7 +188,7 @@ export default function ResultPage() {
             );
           })}
         </div>
-      </div>
+      </Card>
 
       <Link
         href="/student"

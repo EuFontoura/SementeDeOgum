@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { getDocument, getCollection, where } from "@/lib/firestore";
 import Badge from "@/components/ui/Badge";
+import Card from "@/components/ui/Card";
+import Skeleton from "@/components/ui/Skeleton";
 import type { Exam } from "@/types/exam";
 import type { Question } from "@/types/question";
 import type { Result } from "@/types/result";
@@ -39,8 +41,23 @@ export default function ExamDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-200 border-t-green-500" />
+      <div className="mx-auto max-w-2xl">
+        <Skeleton className="mb-4 h-4 w-20" />
+        <Card>
+          <div className="mb-4 flex items-center justify-between">
+            <Skeleton className="h-8 w-1/2" />
+            <Skeleton className="h-6 w-20 rounded-full" />
+          </div>
+          <div className="mb-6 grid grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i}>
+                <Skeleton className="mb-1 h-4 w-12" />
+                <Skeleton className="h-6 w-8" />
+              </div>
+            ))}
+          </div>
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </Card>
       </div>
     );
   }
@@ -61,7 +78,7 @@ export default function ExamDetailPage() {
       >
         ← Voltar
       </Link>
-      <div className="rounded-xl border border-green-100 bg-white p-6 shadow-sm">
+      <Card>
         <div className="mb-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-green-900">{exam.title}</h1>
           <Badge
@@ -99,7 +116,7 @@ export default function ExamDetailPage() {
             Nenhum resultado disponível (simulado não publicado).
           </p>
         )}
-      </div>
+      </Card>
     </div>
   );
 }
