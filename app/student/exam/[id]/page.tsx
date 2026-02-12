@@ -29,6 +29,7 @@ export default function ExamPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [timerMinimized, setTimerMinimized] = useState(false);
   const [showFinishModal, setShowFinishModal] = useState(false);
+  const [showMobileNav, setShowMobileNav] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [startedAtMs, setStartedAtMs] = useState<number | null>(null);
 
@@ -177,6 +178,26 @@ export default function ExamPage() {
 
   return (
     <div className="flex min-h-screen bg-white">
+      <div className="fixed left-0 top-0 z-30 flex w-full items-center justify-between border-b border-green-100 bg-white px-4 py-3 md:hidden">
+        <span className="text-sm font-semibold text-green-900">
+          Questão {currentIndex + 1} de {questions.length}
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowMobileNav(true)}
+            className="cursor-pointer rounded-lg bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700"
+          >
+            {answeredSet.size}/{questions.length} ✓
+          </button>
+          <button
+            onClick={() => setShowFinishModal(true)}
+            className="cursor-pointer rounded-lg bg-red-500 px-3 py-1.5 text-xs font-medium text-white"
+          >
+            Finalizar
+          </button>
+        </div>
+      </div>
+
       <aside className="fixed left-0 top-0 hidden h-screen w-64 flex-col justify-between border-r border-green-100 bg-white p-4 md:flex">
         <QuestionNav
           totalQuestions={questions.length}
@@ -193,7 +214,24 @@ export default function ExamPage() {
         </Button>
       </aside>
 
-      <main className="flex-1 p-8 md:ml-64">
+      {showMobileNav && (
+        <div className="fixed inset-0 z-50 bg-black/50 md:hidden" onClick={() => setShowMobileNav(false)}>
+          <div className="absolute bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto rounded-t-2xl bg-white p-4" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-green-900">Navegação</h3>
+              <button onClick={() => setShowMobileNav(false)} className="cursor-pointer text-green-400">✕</button>
+            </div>
+            <QuestionNav
+              totalQuestions={questions.length}
+              currentIndex={currentIndex}
+              answeredSet={answeredSet}
+              onNavigate={(i) => { setCurrentIndex(i); setShowMobileNav(false); }}
+            />
+          </div>
+        </div>
+      )}
+
+      <main className="flex-1 px-4 pb-8 pt-16 md:ml-64 md:px-8 md:pt-8">
         <div className="mx-auto max-w-3xl">
           {currentQuestion && (
             <QuestionCard

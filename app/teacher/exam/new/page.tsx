@@ -222,8 +222,8 @@ export default function NewExamPage() {
         <h1 className="mb-6 text-2xl font-bold text-green-900">
           {title} — Questões
         </h1>
-        <div className="flex gap-6">
-          <div className="w-64 shrink-0">
+        <div className="flex flex-col gap-6 lg:flex-row">
+          <div className="w-full lg:w-64 lg:shrink-0">
             <div className="rounded-xl border border-green-100 bg-white p-4 shadow-sm">
               <h3 className="mb-3 text-sm font-semibold text-green-900">
                 Questões ({questions.length})
@@ -402,7 +402,7 @@ export default function NewExamPage() {
                         }))
                       }
                       placeholder={`Alternativa ${alt.label}`}
-                      className="flex-1 rounded-lg border border-green-200 px-3 py-2 text-sm text-green-900 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100"
+                      className="flex-1 rounded-lg border border-green-200 px-3 py-2 text-sm text-green-900 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 w-1 md:w-full"
                     />
                   </div>
                 ))}
