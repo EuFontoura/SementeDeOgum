@@ -151,6 +151,12 @@ public/
 
 - [ ] Regras de segurança do Firestore
 
+## Licença
+
+Este projeto é licenciado sob a [GNU Affero General Public License v3.0](LICENSE).
+
+O nome "Semente de Ogum", logotipos e demais elementos visuais da marca (contidos em `public/images/brand/`) **não** são cobertos por esta licença e pertencem à organização Semente de Ogum.
+
 ## Identidade Visual
 
 Baseada no [Manual de Identidade Visual](visual-identity.md) da marca.
