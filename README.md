@@ -153,9 +153,7 @@ public/
 
 ## Licença
 
-Este projeto é licenciado sob a [GNU Affero General Public License v3.0](LICENSE).
-
-O nome "Semente de Ogum", logotipos e demais elementos visuais da marca (contidos em `public/images/brand/`) **não** são cobertos por esta licença e pertencem à organização Semente de Ogum.
+Este projeto é software proprietário. Todos os direitos reservados à Semente de Ogum. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ## Identidade Visual
 

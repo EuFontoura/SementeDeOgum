@@ -108,7 +108,7 @@ export default function RegisterPage() {
             <button
               type="button"
               onClick={() => setRole("student")}
-              className={`flex-1 rounded-lg py-2 font-medium transition-colors ${
+              className={`flex-1 rounded-lg py-2 cursor-pointer font-medium transition-colors ${
                 role === "student"
                   ? "bg-green-500 text-white"
                   : "bg-green-50 text-green-500"
@@ -119,7 +119,7 @@ export default function RegisterPage() {
             <button
               type="button"
               onClick={() => setRole("teacher")}
-              className={`flex-1 rounded-lg py-2 font-medium transition-colors ${
+              className={`flex-1 rounded-lg py-2 cursor-pointer font-medium transition-colors ${
                 role === "teacher"
                   ? "bg-green-500 text-white"
                   : "bg-green-50 text-green-500"
