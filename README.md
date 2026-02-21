@@ -38,9 +38,11 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 NEXT_PUBLIC_TEACHER_INVITE_CODE=
+TEACHER_DELETE_PASSWORD=
 ```
 
-A variável `NEXT_PUBLIC_TEACHER_INVITE_CODE` define o código de convite que professores precisam informar no cadastro.
+- `NEXT_PUBLIC_TEACHER_INVITE_CODE` — código de convite que professores precisam informar no cadastro.
+- `TEACHER_DELETE_PASSWORD` — senha exigida para excluir simulados (validada no servidor, não exposta ao cliente).
 
 ### Executar
 

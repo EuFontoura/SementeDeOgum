@@ -106,19 +106,30 @@ export default function TeacherDashboard() {
                 )}
               </div>
               <div className="flex items-center gap-3">
-                <Link
-                  href={`/teacher/exam/${exam.id}`}
-                  className="text-sm font-medium text-green-500 transition-colors hover:text-green-700"
-                >
-                  Detalhes →
-                </Link>
-                {exam.status === "published" && exam.studentCount > 0 && (
+                {exam.status === "draft" ? (
                   <Link
-                    href={`/teacher/exam/${exam.id}/results`}
-                    className="text-sm font-medium text-green-700 transition-colors hover:text-green-900"
+                    href={`/teacher/exam/${exam.id}/edit`}
+                    className="text-sm font-medium text-green-500 transition-colors hover:text-green-700"
                   >
-                    Ver Resultados →
+                    Continuar Editando →
                   </Link>
+                ) : (
+                  <>
+                    <Link
+                      href={`/teacher/exam/${exam.id}`}
+                      className="text-sm font-medium text-green-500 transition-colors hover:text-green-700"
+                    >
+                      Detalhes →
+                    </Link>
+                    {exam.studentCount > 0 && (
+                      <Link
+                        href={`/teacher/exam/${exam.id}/results`}
+                        className="text-sm font-medium text-green-700 transition-colors hover:text-green-900"
+                      >
+                        Ver Resultados →
+                      </Link>
+                    )}
+                  </>
                 )}
               </div>
             </Card>

@@ -24,11 +24,12 @@ export default function Button({
   loading = false,
   children,
   disabled,
+  className = "",
   ...props
 }: ButtonProps) {
   return (
     <button
-      className={`flex cursor-pointer items-center justify-center gap-2 rounded-full px-6 py-2.5 font-semibold transition-colors disabled:cursor-not-allowed ${variantStyles[variant]}`}
+      className={`flex cursor-pointer items-center justify-center gap-2 rounded-full px-6 py-2.5 font-semibold transition-colors disabled:cursor-not-allowed ${variantStyles[variant]} ${className}`}
       disabled={disabled || loading}
       {...props}
     >
