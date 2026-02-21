@@ -11,7 +11,7 @@ Alunos realizam simulados cronometrados no formato ENEM. Professores criam prova
 - **Estilização:** Tailwind CSS 4
 - **Tipografia:** Poppins (Google Fonts)
 - **Backend:** Firebase (Authentication + Firestore)
-- **Plano:** Firebase free tier
+- **Plano:** Firebase free tier (sem Firebase Storage — imagens em Base64)
 
 ## Começando
 
@@ -56,35 +56,70 @@ npx tsc --noEmit  # type check
 
 ```
 app/
-├── layout.tsx              # Layout raiz (Poppins, metadata, providers)
-├── page.tsx                # Landing page
-├── login/page.tsx          # Login
-├── register/page.tsx       # Cadastro (aluno/professor + código de convite)
-├── reset-password/page.tsx # Recuperação de senha
-├── student/                # Área do aluno (em desenvolvimento)
-└── teacher/                # Área do professor (em desenvolvimento)
+├── layout.tsx                     # Layout raiz (Poppins, metadata, providers)
+├── page.tsx                       # Landing page
+├── providers.tsx                  # Providers globais (Auth + Toast)
+├── login/page.tsx                 # Login
+├── register/page.tsx              # Cadastro (aluno/professor + código de convite)
+├── reset-password/page.tsx        # Recuperação de senha
+├── student/
+│   ├── layout.tsx                 # Layout aluno (Navbar, Sidebar, RouteGuard)
+│   ├── page.tsx                   # Dashboard — simulados disponíveis
+│   ├── profile/page.tsx           # Perfil do aluno
+│   ├── exam/[id]/
+│   │   ├── layout.tsx             # Layout da prova (timer, navegação)
+│   │   └── page.tsx               # Execução do simulado
+│   └── result/[id]/page.tsx       # Resultado do simulado
+└── teacher/
+    ├── layout.tsx                 # Layout professor (Navbar, Sidebar, RouteGuard)
+    ├── page.tsx                   # Dashboard — simulados criados + estatísticas
+    ├── exam/new/page.tsx          # Criação de simulado
+    └── exam/[id]/
+        ├── page.tsx               # Detalhes do simulado
+        └── results/               # Resultados dos alunos
 components/
+├── exam/
+│   ├── QuestionCard.tsx           # Card de questão com alternativas
+│   ├── QuestionNav.tsx            # Painel lateral de navegação entre questões
+│   └── Timer.tsx                  # Timer minimizável (5h30, alerta em 30min)
 ├── layout/
-│   ├── AuthLayout.tsx      # Layout das páginas de autenticação
-│   └── RouteGuard.tsx      # Proteção de rotas por role
+│   ├── AuthLayout.tsx             # Layout das páginas de autenticação
+│   ├── Navbar.tsx                 # Barra de navegação superior
+│   ├── Sidebar.tsx                # Menu lateral (desktop)
+│   ├── MobileNav.tsx              # Menu de navegação mobile
+│   └── RouteGuard.tsx             # Proteção de rotas por role
 └── ui/
-    ├── Button.tsx           # Botão com variantes (primary, outlined, danger)
-    ├── Input.tsx            # Input com label e estado de erro
-    └── PasswordCriteria.tsx # Checklist visual de critérios de senha
+    ├── Badge.tsx                  # Badge com variantes (default, warning, success)
+    ├── Button.tsx                 # Botão com variantes (primary, outlined, danger)
+    ├── Card.tsx                   # Card container reutilizável
+    ├── Input.tsx                  # Input com label e estado de erro
+    ├── Modal.tsx                  # Modal de confirmação
+    ├── PasswordCriteria.tsx       # Checklist visual de critérios de senha
+    ├── Skeleton.tsx               # Skeleton loading placeholder
+    └── Toast.tsx                  # Notificação toast (success, error)
 contexts/
-└── AuthContext.tsx          # Provider de autenticação (user, role, loading)
+├── AuthContext.tsx                # Provider de autenticação (user, role, loading)
+└── ToastContext.tsx               # Provider de toasts globais
+hooks/
+├── useExam.ts                    # Carrega prova, questões e respostas do aluno
+├── useExams.ts                   # Lista simulados com status do aluno
+└── useTimer.ts                   # Timer regressivo de 5h30 com alerta
 lib/
-├── firebase.ts             # Inicialização do Firebase
-├── auth.ts                 # Helpers de autenticação (signUp, signIn, signOut, resetPassword)
-├── firestore.ts            # Helpers genéricos do Firestore (CRUD)
-└── validation.ts           # Validação de email, senha e código de convite
+├── firebase.ts                   # Inicialização do Firebase
+├── auth.ts                       # Helpers de autenticação (signUp, signIn, signOut, resetPassword)
+├── firestore.ts                  # Helpers genéricos do Firestore (CRUD)
+├── image.ts                      # Compressão e conversão de imagens para Base64
+└── validation.ts                 # Validação de email, senha e código de convite
 types/
-├── user.ts                 # User, UserRole
-├── exam.ts                 # Exam, ExamDay, ExamStatus
-├── question.ts             # Question, Alternative
-└── result.ts               # Result, Answer, SubjectScore
+├── user.ts                       # User, UserRole
+├── exam.ts                       # Exam, ExamDay, ExamStatus
+├── question.ts                   # Question, Alternative
+└── result.ts                     # Result, Answer, SubjectScore
 public/
-└── images/brand/logo/      # Logos da marca
+├── images/brand/                 # Logos da marca
+├── apple-touch-icon.png          # Ícone Apple Touch
+├── icon-192.png                  # Ícone PWA 192×192
+└── icon-512.png                  # Ícone PWA 512×512
 ```
 
 ## Funcionalidades
@@ -95,17 +130,25 @@ public/
 - [x] Autenticação (login, cadastro, recuperação de senha)
 - [x] Cadastro com seleção de role (Aluno / Professor)
 - [x] Código de convite para cadastro de professores
-- [x] Validação de email
-- [x] Critérios de senha forte (8+ chars, maiúscula, minúscula, número, especial)
+- [x] Validação de email e critérios de senha forte (8+ chars, maiúscula, minúscula, número, especial)
 - [x] Proteção de rotas por role (RouteGuard)
 - [x] Tipos Firestore definidos (users, exams, questions, answers, results)
+- [x] Layout responsivo com Navbar, Sidebar e MobileNav
+- [x] Sistema de toasts globais (sucesso / erro)
+- [x] Área do aluno — dashboard com simulados e status (não iniciado, em andamento, concluído)
+- [x] Área do aluno — execução de simulado com QuestionCard e QuestionNav
+- [x] Área do aluno — perfil
+- [x] Área do aluno — visualização de resultado
+- [x] Timer de prova (5h30, alerta vermelho em 30min, auto-submit em 0)
+- [x] Área do professor — dashboard com simulados criados e contagem de alunos
+- [x] Área do professor — criação de simulado
+- [x] Área do professor — detalhes do simulado
+- [x] Área do professor — resultados dos alunos
+- [x] Upload de imagens em Base64 (compressão client-side, max 800px, ≤900KB)
+- [x] Componentes UI reutilizáveis (Button, Input, Card, Badge, Modal, Skeleton, Toast)
 
-### Em desenvolvimento
+### Pendente
 
-- [ ] Área do aluno (dashboard, execução de simulado, resultados)
-- [ ] Área do professor (criação de provas, análise de resultados)
-- [ ] Timer de prova (5h30, auto-submit)
-- [ ] Upload de imagens em Base64
 - [ ] Regras de segurança do Firestore
 
 ## Identidade Visual
