@@ -72,12 +72,16 @@ app/
 │   │   ├── layout.tsx             # Layout da prova (timer, navegação)
 │   │   └── page.tsx               # Execução do simulado
 │   └── result/[id]/page.tsx       # Resultado do simulado
+├── termos/page.tsx                # Termos de uso
+├── privacidade/page.tsx           # Política de privacidade (LGPD)
+├── api/verify-delete-password/    # API de verificação de senha de exclusão
 └── teacher/
     ├── layout.tsx                 # Layout professor (Navbar, Sidebar, RouteGuard)
     ├── page.tsx                   # Dashboard — simulados criados + estatísticas
-    ├── exam/new/page.tsx          # Criação de simulado
+    ├── exam/new/page.tsx          # Criação de simulado (salva rascunho)
     └── exam/[id]/
-        ├── page.tsx               # Detalhes do simulado
+        ├── page.tsx               # Detalhes do simulado + exclusão
+        ├── edit/page.tsx           # Edição de simulado (auto-save)
         └── results/               # Resultados dos alunos
 components/
 ├── exam/
@@ -85,7 +89,8 @@ components/
 │   ├── QuestionNav.tsx            # Painel lateral de navegação entre questões
 │   └── Timer.tsx                  # Timer minimizável (5h30, alerta em 30min)
 ├── layout/
-│   ├── AuthLayout.tsx             # Layout das páginas de autenticação
+│   ├── AuthLayout.tsx             # Layout das páginas de autenticação (com footer)
+│   ├── Footer.tsx                 # Rodapé com links legais
 │   ├── Navbar.tsx                 # Barra de navegação superior
 │   ├── Sidebar.tsx                # Menu lateral (desktop)
 │   ├── MobileNav.tsx              # Menu de navegação mobile
@@ -143,11 +148,16 @@ public/
 - [x] Área do aluno — visualização de resultado
 - [x] Timer de prova (5h30, alerta vermelho em 30min, auto-submit em 0)
 - [x] Área do professor — dashboard com simulados criados e contagem de alunos
-- [x] Área do professor — criação de simulado
+- [x] Área do professor — criação de simulado com salvamento automático de rascunho
+- [x] Área do professor — edição de simulados (rascunhos e publicados)
 - [x] Área do professor — detalhes do simulado
 - [x] Área do professor — resultados dos alunos
+- [x] Área do professor — exclusão de simulado com senha de confirmação
 - [x] Upload de imagens em Base64 (compressão client-side, max 800px, ≤900KB)
 - [x] Componentes UI reutilizáveis (Button, Input, Card, Badge, Modal, Skeleton, Toast)
+- [x] Termos de uso e política de privacidade (LGPD)
+- [x] Rodapé com links legais
+- [x] Proteção contra edição destrutiva em simulados com resultados existentes
 
 ### Pendente
 
