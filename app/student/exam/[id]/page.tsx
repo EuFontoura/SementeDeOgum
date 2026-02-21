@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { doc, setDoc, getDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -32,6 +32,7 @@ export default function ExamPage() {
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [startedAtMs, setStartedAtMs] = useState<number | null>(null);
+  const finishedRef = useRef(false);
 
   const { formatted, isWarning, isTimeUp } = useTimer(startedAtMs);
 
@@ -45,6 +46,7 @@ export default function ExamPage() {
       if (resultSnap.exists()) {
         const data = resultSnap.data();
         if (data.finishedAt) {
+          finishedRef.current = true;
           router.replace(`/student/result/${examId}`);
           return;
         }
@@ -68,8 +70,9 @@ export default function ExamPage() {
   }, [user, loading, examId, router]);
 
   const submitExam = useCallback(async () => {
-    if (!user || submitting) return;
+    if (!user || submitting || finishedRef.current) return;
     setSubmitting(true);
+    finishedRef.current = true;
 
     const subjectMap = new Map<string, { correct: number; total: number }>();
 
@@ -114,34 +117,35 @@ export default function ExamPage() {
     }
   }, [isTimeUp, startedAtMs, submitExam]);
 
-  async function handleSelectAnswer(questionId: string, label: string) {
-    if (!user) return;
+  const handleSelectAnswer = useCallback(
+    async (questionId: string, label: string) => {
+      if (!user || finishedRef.current || submitting) return;
 
-    try {
-      const answerRef = doc(
-        db,
-        "answers",
-        `${examId}_${user.uid}_${questionId}`
-      );
-      await setDoc(answerRef, {
-        examId,
-        userId: user.uid,
-        questionId,
-        selectedAnswer: label,
-        answeredAt: Timestamp.now(),
-      });
+      try {
+        const answerRef = doc(
+          db,
+          "answers",
+          `${examId}_${user.uid}_${questionId}`
+        );
+        await setDoc(answerRef, {
+          examId,
+          userId: user.uid,
+          questionId,
+          selectedAnswer: label,
+          answeredAt: Timestamp.now(),
+        });
 
-      setAnswers((prev) => {
-        const next = new Map(prev);
-        next.set(questionId, label);
-        return next;
-      });
-
-      showToast("Resposta salva");
-    } catch {
-      showToast("Erro ao salvar resposta", "error");
-    }
-  }
+        setAnswers((prev) => {
+          const next = new Map(prev);
+          next.set(questionId, label);
+          return next;
+        });
+      } catch {
+        showToast("Erro ao salvar resposta", "error");
+      }
+    },
+    [user, examId, submitting, setAnswers, showToast]
+  );
 
   const currentQuestion = questions[currentIndex];
 
@@ -161,7 +165,7 @@ export default function ExamPage() {
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentQuestion, questions.length, showFinishModal]);
+  }, [currentQuestion, questions.length, showFinishModal, handleSelectAnswer]);
 
   if (loading || !exam || !startedAtMs) {
     return (
@@ -170,6 +174,20 @@ export default function ExamPage() {
       </div>
     );
   }
+
+  if (questions.length === 0) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+        <p className="text-green-400">
+          Este simulado não possui questões.
+        </p>
+        <Button variant="outlined" onClick={() => router.replace("/student")}>
+          Voltar ao Dashboard
+        </Button>
+      </div>
+    );
+  }
+
   const answeredSet = new Set(
     questions
       .map((q, i) => (answers.has(q.id) ? i : -1))

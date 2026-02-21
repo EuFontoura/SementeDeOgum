@@ -73,17 +73,22 @@ export default function EditExamPage() {
   const [imageError, setImageError] = useState("");
   const [publishing, setPublishing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [hasResults, setHasResults] = useState(false);
 
   useEffect(() => {
     if (!user) return;
 
     async function fetchData() {
-      const [examData, questionsData] = await Promise.all([
+      const [examData, questionsData, resultsData] = await Promise.all([
         getDocument<Exam>("exams", examId),
         getCollection<Question>(
           "questions",
           where("examId", "==", examId),
           orderBy("order", "asc")
+        ),
+        getCollection<{ id: string }>(
+          "results",
+          where("examId", "==", examId)
         ),
       ]);
 
@@ -93,6 +98,7 @@ export default function EditExamPage() {
       }
 
       setExam(examData);
+      setHasResults(resultsData.length > 0);
       setQuestions(
         questionsData.map((q) => ({
           firestoreId: q.id,
@@ -261,12 +267,21 @@ export default function EditExamPage() {
     {} as Record<string, number>
   );
 
+  const lockedEdit = isPublished && hasResults;
+
   if (step === "questions") {
     return (
       <div>
         <h1 className="mb-6 text-2xl font-bold text-green-900">
           {exam.title} — Questões
         </h1>
+        {lockedEdit && (
+          <div className="mb-6 rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
+            ⚠️ Este simulado já possui respostas de alunos. Você pode corrigir
+            textos e alternativas, mas não pode excluir questões nem alterar
+            gabaritos para preservar os resultados existentes.
+          </div>
+        )}
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="w-full lg:w-64 lg:shrink-0">
             <div className="rounded-xl border border-green-100 bg-white p-4 shadow-sm">
@@ -297,12 +312,14 @@ export default function EditExamPage() {
                         </span>{" "}
                         <span className="text-green-400">{q.subject}</span>
                       </button>
-                      <button
-                        onClick={() => handleDeleteQuestion(i)}
-                        className="ml-2 cursor-pointer text-red-400 hover:text-red-600"
-                      >
-                        ✕
-                      </button>
+                      {!lockedEdit && (
+                        <button
+                          onClick={() => handleDeleteQuestion(i)}
+                          className="ml-2 cursor-pointer text-red-400 hover:text-red-600"
+                        >
+                          ✕
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -462,6 +479,7 @@ export default function EditExamPage() {
                       type="radio"
                       name="correctAnswer"
                       checked={currentQuestion.correctAnswer === alt.label}
+                      disabled={lockedEdit && editingIndex !== null}
                       onChange={() =>
                         setCurrentQuestion((prev) => ({
                           ...prev,

@@ -17,17 +17,17 @@ export default function RouteGuard({ allowedRole, children }: RouteGuardProps) {
   useEffect(() => {
     if (loading) return;
 
-    if (!user) {
+    if (!user || !role) {
       router.replace("/login");
       return;
     }
 
-    if (role && role !== allowedRole) {
+    if (role !== allowedRole) {
       router.replace(role === "teacher" ? "/teacher" : "/student");
     }
   }, [user, role, loading, allowedRole, router]);
 
-  if (loading) {
+  if (loading || !user || !role) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-200 border-t-green-500" />
@@ -35,7 +35,7 @@ export default function RouteGuard({ allowedRole, children }: RouteGuardProps) {
     );
   }
 
-  if (!user || (role && role !== allowedRole)) {
+  if (role !== allowedRole) {
     return null;
   }
 

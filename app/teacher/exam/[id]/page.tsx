@@ -48,7 +48,7 @@ export default function ExamDetailPage() {
       ]);
       setExam(examData);
       setQuestions(questionsData);
-      setResults(resultsData.filter((r) => r.finishedAt));
+      setResults(resultsData);
       setLoading(false);
     }
 
@@ -82,8 +82,8 @@ export default function ExamDetailPage() {
         ...questions.map((q) => deleteDocument("questions", q.id)),
         ...results.map((r) => deleteDocument("results", r.id)),
         ...answersData.map((a) => deleteDocument("answers", a.id)),
-        deleteDocument("exams", examId),
       ]);
+      await deleteDocument("exams", examId);
 
       showToast("Simulado excluído");
       router.replace("/teacher");
@@ -152,9 +152,9 @@ export default function ExamDetailPage() {
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium text-green-400">Respostas</p>
+            <p className="text-sm font-medium text-green-400">Concluídos</p>
             <p className="text-lg font-semibold text-green-900">
-              {results.length}
+              {results.filter((r) => r.finishedAt).length}
             </p>
           </div>
         </div>
