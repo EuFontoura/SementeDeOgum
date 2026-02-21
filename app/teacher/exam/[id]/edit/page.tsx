@@ -87,8 +87,8 @@ export default function EditExamPage() {
         ),
       ]);
 
-      if (!examData || examData.status !== "draft") {
-        router.replace(`/teacher/exam/${examId}`);
+      if (!examData) {
+        router.replace("/teacher");
         return;
       }
 
@@ -215,20 +215,25 @@ export default function EditExamPage() {
     }
   }
 
+  const isPublished = exam?.status === "published";
+
   async function handlePublish() {
     if (!user) return;
     setPublishing(true);
 
     try {
-      await updateDoc(doc(db, "exams", examId), {
-        status: "published",
-        publishedAt: Timestamp.now(),
-      });
-
-      showToast("Simulado publicado!");
+      if (isPublished) {
+        showToast("Alterações salvas!");
+      } else {
+        await updateDoc(doc(db, "exams", examId), {
+          status: "published",
+          publishedAt: Timestamp.now(),
+        });
+        showToast("Simulado publicado!");
+      }
       router.replace("/teacher");
     } catch {
-      showToast("Erro ao publicar", "error");
+      showToast("Erro ao salvar", "error");
       setPublishing(false);
     }
   }
@@ -587,7 +592,7 @@ export default function EditExamPage() {
             Voltar
           </Button>
           <Button loading={publishing} onClick={handlePublish}>
-            Publicar Simulado
+            {isPublished ? "Salvar Alterações" : "Publicar Simulado"}
           </Button>
         </div>
       </div>

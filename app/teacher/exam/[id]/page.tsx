@@ -159,21 +159,20 @@ export default function ExamDetailPage() {
           </div>
         </div>
         <div className="flex flex-col gap-3">
-          {exam.status === "published" ? (
+          {exam.status === "published" && (
             <Link
               href={`/teacher/exam/${examId}/results`}
               className="block rounded-lg bg-green-500 px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-green-700"
             >
               Ver Resultados dos Alunos
             </Link>
-          ) : (
-            <Link
-              href={`/teacher/exam/${examId}/edit`}
-              className="block rounded-lg bg-green-500 px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-green-700"
-            >
-              Continuar Editando
-            </Link>
           )}
+          <Link
+            href={`/teacher/exam/${examId}/edit`}
+            className="block rounded-lg border-2 border-green-500 px-4 py-2 text-center text-sm font-semibold text-green-500 transition-colors hover:bg-green-500 hover:text-white"
+          >
+            {exam.status === "draft" ? "Continuar Editando" : "Editar Simulado"}
+          </Link>
           <button
             onClick={() => {
               setShowDeleteModal(true);
