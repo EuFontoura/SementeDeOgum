@@ -224,7 +224,7 @@ export default function ExamPage() {
           onNavigate={setCurrentIndex}
         />
         <Button
-          variant="danger"
+        //   variant="danger"
           onClick={() => setShowFinishModal(true)}
           className={`w-full ${answeredSet.size == questions.length ? "btn-primary" : ""}`}
         >

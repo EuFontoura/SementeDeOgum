@@ -1,0 +1,89 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function userRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function examDoc(examId) {
+      return get(/databases/$(database)/documents/exams/$(examId)).data;
+    }
+
+    // ── Users ──────────────────────────────────────────────────
+    // Everyone reads own doc; teachers also read student docs (for names on results page)
+    match /users/{userId} {
+      allow read:   if isAuth() && (request.auth.uid == userId || userRole() == 'teacher');
+      allow create: if isAuth() && request.auth.uid == userId;
+    }
+
+    // ── Exams ──────────────────────────────────────────────────
+    match /exams/{examId} {
+      allow read: if isAuth() && (
+        (userRole() == 'student' && resource.data.status == 'published') ||
+        (userRole() == 'teacher' && resource.data.createdBy == request.auth.uid)
+      );
+      allow create: if isAuth() && userRole() == 'teacher'
+        && request.resource.data.createdBy == request.auth.uid;
+      allow update: if isAuth() && userRole() == 'teacher'
+        && resource.data.createdBy == request.auth.uid;
+      allow delete: if isAuth() && userRole() == 'teacher'
+        && resource.data.createdBy == request.auth.uid;
+    }
+
+    // ── Questions ──────────────────────────────────────────────
+    match /questions/{questionId} {
+      allow read: if isAuth() && (
+        (userRole() == 'student' && examDoc(resource.data.examId).status == 'published') ||
+        (userRole() == 'teacher' && examDoc(resource.data.examId).createdBy == request.auth.uid)
+      );
+      allow create: if isAuth() && userRole() == 'teacher'
+        && examDoc(request.resource.data.examId).createdBy == request.auth.uid;
+      allow update: if isAuth() && userRole() == 'teacher'
+        && examDoc(resource.data.examId).createdBy == request.auth.uid;
+      allow delete: if isAuth() && userRole() == 'teacher'
+        && examDoc(resource.data.examId).createdBy == request.auth.uid;
+    }
+
+    // ── Answers ────────────────────────────────────────────────
+    match /answers/{answerId} {
+      allow read: if isAuth() && (
+        (userRole() == 'student' && resource.data.userId == request.auth.uid) ||
+        (userRole() == 'teacher' && examDoc(resource.data.examId).createdBy == request.auth.uid)
+      );
+      allow create: if isAuth() && userRole() == 'student'
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuth() && userRole() == 'student'
+        && resource.data.userId == request.auth.uid;
+      allow delete: if isAuth() && userRole() == 'teacher'
+        && examDoc(resource.data.examId).createdBy == request.auth.uid;
+    }
+
+    // ── Results ────────────────────────────────────────────────
+    // Split get/list because students getDoc() a result that may not exist yet
+    // (to check if they already started the exam). resource is null for
+    // non-existent docs, so resource.data access would deny the read.
+    match /results/{resultId} {
+      allow get: if isAuth() && (
+        resource == null ||
+        (userRole() == 'student' && resource.data.userId == request.auth.uid) ||
+        (userRole() == 'teacher' && examDoc(resource.data.examId).createdBy == request.auth.uid)
+      );
+      allow list: if isAuth() && (
+        (userRole() == 'student' && resource.data.userId == request.auth.uid) ||
+        (userRole() == 'teacher' && examDoc(resource.data.examId).createdBy == request.auth.uid)
+      );
+      allow create: if isAuth() && userRole() == 'student'
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuth() && userRole() == 'student'
+        && resource.data.userId == request.auth.uid;
+      allow delete: if isAuth() && userRole() == 'teacher'
+        && examDoc(resource.data.examId).createdBy == request.auth.uid;
+    }
+  }
+}

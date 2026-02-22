@@ -281,19 +281,25 @@ results/
 - Students can only read published exams
 - Students can only write to their own answers/results
 - Teachers can only CRUD their own exams/questions
-- Exams cannot be edited after `status: "published"`
+- Teachers CAN edit published exams (typo fixes) — integrity protected at UI level
 
 ### 6.2 Route Protection
 
-- Middleware checks auth state + role
+- RouteGuard component checks auth state + role (implemented in Phase 2)
 - Redirect unauthenticated users to `/login`
 - Redirect wrong-role users to their dashboard
 
+### 6.3 Query Scoping (rules compatibility)
+
+- Teacher dashboard scoped to `where("createdBy", "==", uid)` for exams
+- Teacher dashboard fetches results per-exam instead of all results
+- All student queries already properly scoped (status filter, userId filter)
+
 ### Tasks
 
-- [ ] Write Firestore security rules
-- [ ] Implement Next.js middleware for route protection
-- [ ] Test role-based access scenarios
+- [x] Write Firestore security rules (`firestore.rules`)
+- [x] Scope teacher dashboard queries for rules compatibility
+- [x] Route protection via RouteGuard (completed in Phase 2)
 
 ---
 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { getCollection } from "@/lib/firestore";
+import { getCollection, where } from "@/lib/firestore";
 import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
 import Skeleton from "@/components/ui/Skeleton";
@@ -24,17 +24,24 @@ export default function TeacherDashboard() {
     if (!user) return;
 
     async function fetchExams() {
-      const examsData = await getCollection<Exam>("exams");
+      const examsData = await getCollection<Exam>(
+        "exams",
+        where("createdBy", "==", user.uid)
+      );
 
-      const allResults = await getCollection<Result>("results");
-      const finishedResults = allResults.filter((r) => r.finishedAt);
-
-      const withStats: ExamWithStats[] = examsData.map((exam) => ({
-        ...exam,
-        studentCount: finishedResults.filter((r) => r.examId === exam.id)
-          .length,
-        questionCount: 0,
-      }));
+      const withStats: ExamWithStats[] = await Promise.all(
+        examsData.map(async (exam) => {
+          const examResults = await getCollection<Result>(
+            "results",
+            where("examId", "==", exam.id)
+          );
+          return {
+            ...exam,
+            studentCount: examResults.filter((r) => r.finishedAt).length,
+            questionCount: 0,
+          };
+        })
+      );
 
       setExams(withStats);
       setLoading(false);
