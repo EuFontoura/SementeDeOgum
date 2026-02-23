@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -12,8 +13,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "Semente de Ogum — Simulado ENEM",
-  description:
-    "Cursinho preparatório gratuito. Plataforma de simulados ENEM.",
+  description: "Cursinho preparatório gratuito. Plataforma de simulados ENEM.",
   icons: {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
@@ -35,6 +35,7 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${poppins.variable} font-sans antialiased`}>
         <Providers>{children}</Providers>
+        <SpeedInsights />
       </body>
     </html>
   );
