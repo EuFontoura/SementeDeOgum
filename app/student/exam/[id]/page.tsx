@@ -178,9 +178,7 @@ export default function ExamPage() {
   if (questions.length === 0) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-        <p className="text-green-400">
-          Este simulado não possui questões.
-        </p>
+        <p className="text-green-400">Este simulado não possui questões.</p>
         <Button variant="outlined" onClick={() => router.replace("/student")}>
           Voltar ao Dashboard
         </Button>
@@ -224,26 +222,44 @@ export default function ExamPage() {
           onNavigate={setCurrentIndex}
         />
         <Button
-        //   variant="danger"
           onClick={() => setShowFinishModal(true)}
-          className={`w-full ${answeredSet.size == questions.length ? "btn-primary" : ""}`}
+          variant={
+            answeredSet.size == questions.length ? "principal" : "outlined"
+          }
+          className="w-full"
         >
           Finalizar Prova
         </Button>
       </aside>
 
       {showMobileNav && (
-        <div className="fixed inset-0 z-50 bg-black/50 md:hidden" onClick={() => setShowMobileNav(false)}>
-          <div className="absolute bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto rounded-t-2xl bg-white p-4" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 bg-black/50 md:hidden"
+          onClick={() => setShowMobileNav(false)}
+        >
+          <div
+            className="absolute bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto rounded-t-2xl bg-white p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-green-900">Navegação</h3>
-              <button onClick={() => setShowMobileNav(false)} className="cursor-pointer text-green-400">✕</button>
+              <h3 className="text-sm font-semibold text-green-900">
+                Navegação
+              </h3>
+              <button
+                onClick={() => setShowMobileNav(false)}
+                className="cursor-pointer text-green-400"
+              >
+                ✕
+              </button>
             </div>
             <QuestionNav
               totalQuestions={questions.length}
               currentIndex={currentIndex}
               answeredSet={answeredSet}
-              onNavigate={(i) => { setCurrentIndex(i); setShowMobileNav(false); }}
+              onNavigate={(i) => {
+                setCurrentIndex(i);
+                setShowMobileNav(false);
+              }}
             />
           </div>
         </div>
@@ -273,9 +289,7 @@ export default function ExamPage() {
             <Button
               variant="outlined"
               onClick={() =>
-                setCurrentIndex((i) =>
-                  Math.min(questions.length - 1, i + 1)
-                )
+                setCurrentIndex((i) => Math.min(questions.length - 1, i + 1))
               }
               disabled={currentIndex === questions.length - 1}
             >

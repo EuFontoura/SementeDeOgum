@@ -2,7 +2,7 @@
 
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type ButtonVariant = "primary" | "outlined" | "danger";
+type ButtonVariant = "primary" | "outlined" | "danger" | "principal";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
@@ -17,6 +17,8 @@ const variantStyles: Record<ButtonVariant, string> = {
     "border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white disabled:border-green-200 disabled:text-green-200",
   danger:
     "bg-red-500 text-white hover:bg-red-700 disabled:bg-red-300",
+  principal:
+    "w-full bg-[#5b8b07] text-white font-semibold tracking-wide rounded-lg py-3 transition-all duration-200 hover:bg-[#336130] focus:outline-none focus:ring-2 focus:ring-[#9ec187] active:bg-[#15311a] disabled:opacity-70 cursor-pointer",
 };
 
 export default function Button({
