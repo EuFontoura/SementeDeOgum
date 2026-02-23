@@ -83,12 +83,6 @@ export default function EditExamPage() {
         getCollection<{ id: string }>("results", where("examId", "==", examId)),
       ]);
 
-      // **************
-      const examsData = await getCollection<Exam>(
-        "exams",
-        where("createdBy", "==", user?.uid)
-      );
-      // **************
 
       if (!examData) {
         router.replace("/teacher");
