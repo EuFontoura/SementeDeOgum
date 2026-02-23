@@ -158,10 +158,7 @@ public/
 - [x] Termos de uso e política de privacidade (LGPD)
 - [x] Rodapé com links legais
 - [x] Proteção contra edição destrutiva em simulados com resultados existentes
-
-### Pendente
-
-- [ ] Regras de segurança do Firestore
+- [x] Regras de segurança do Firestore
 
 ## Licença
 
