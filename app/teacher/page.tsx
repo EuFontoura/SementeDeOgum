@@ -26,7 +26,7 @@ export default function TeacherDashboard() {
     async function fetchExams() {
       const examsData = await getCollection<Exam>(
         "exams",
-        where("createdBy", "==", user.uid)
+        where("createdBy", "==", user!.uid)
       );
 
       const withStats: ExamWithStats[] = await Promise.all(
