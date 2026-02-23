@@ -13,12 +13,7 @@ import {
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
-import {
-  getDocument,
-  getCollection,
-  where,
-  orderBy,
-} from "@/lib/firestore";
+import { getDocument, getCollection, where, orderBy } from "@/lib/firestore";
 import { compressImageToBase64, getBase64SizeKB } from "@/lib/image";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -64,9 +59,8 @@ export default function EditExamPage() {
 
   const [exam, setExam] = useState<Exam | null>(null);
   const [questions, setQuestions] = useState<QuestionDraft[]>([]);
-  const [currentQuestion, setCurrentQuestion] = useState<QuestionDraft>(
-    emptyQuestion()
-  );
+  const [currentQuestion, setCurrentQuestion] =
+    useState<QuestionDraft>(emptyQuestion());
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [step, setStep] = useState<"questions" | "review">("questions");
   const [error, setError] = useState("");
@@ -86,11 +80,15 @@ export default function EditExamPage() {
           where("examId", "==", examId),
           orderBy("order", "asc")
         ),
-        getCollection<{ id: string }>(
-          "results",
-          where("examId", "==", examId)
-        ),
+        getCollection<{ id: string }>("results", where("examId", "==", examId)),
       ]);
+
+      // **************
+      const examsData = await getCollection<Exam>(
+        "exams",
+        where("createdBy", "==", user?.uid)
+      );
+      // **************
 
       if (!examData) {
         router.replace("/teacher");
@@ -160,10 +158,7 @@ export default function EditExamPage() {
 
     try {
       if (editingIndex !== null) {
-        const firestoreId = await saveQuestionToFirestore(
-          q,
-          editingIndex + 1
-        );
+        const firestoreId = await saveQuestionToFirestore(q, editingIndex + 1);
         setQuestions((prev) =>
           prev.map((item, i) =>
             i === editingIndex ? { ...q, firestoreId } : item
@@ -289,9 +284,7 @@ export default function EditExamPage() {
                 Questões ({questions.length})
               </h3>
               {questions.length === 0 ? (
-                <p className="text-xs text-green-400">
-                  Nenhuma questão ainda.
-                </p>
+                <p className="text-xs text-green-400">Nenhuma questão ainda.</p>
               ) : (
                 <div className="flex flex-col gap-2">
                   {questions.map((q, i) => (
@@ -513,10 +506,7 @@ export default function EditExamPage() {
                 <p className="text-center text-sm text-red-500">{error}</p>
               )}
 
-              <Button
-                onClick={handleAddOrUpdateQuestion}
-                variant="principal"
-              >
+              <Button onClick={handleAddOrUpdateQuestion} variant="principal">
                 {editingIndex !== null
                   ? "Salvar Alterações"
                   : "Adicionar Questão"}
@@ -526,10 +516,7 @@ export default function EditExamPage() {
         </div>
 
         <div className="mt-6 flex justify-between">
-          <Button
-            variant="outlined"
-            onClick={() => router.push("/teacher")}
-          >
+          <Button variant="outlined" onClick={() => router.push("/teacher")}>
             Voltar
           </Button>
           <Button
@@ -556,9 +543,7 @@ export default function EditExamPage() {
       </h1>
       <div className="flex flex-col gap-4">
         <div className="rounded-xl border border-green-100 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-green-900">
-            {exam.title}
-          </h2>
+          <h2 className="text-lg font-semibold text-green-900">{exam.title}</h2>
           <p className="text-sm text-green-400">
             Dia {exam.day} — {daySubjects[exam.day].join(" + ")}
           </p>
@@ -596,9 +581,7 @@ export default function EditExamPage() {
                 <span className="font-bold text-green-900">{i + 1}.</span>{" "}
                 <span className="text-green-400">[{q.subject}]</span>{" "}
                 <span className="text-green-700">
-                  {q.text.length > 100
-                    ? q.text.slice(0, 100) + "..."
-                    : q.text}
+                  {q.text.length > 100 ? q.text.slice(0, 100) + "..." : q.text}
                 </span>
               </div>
             ))}
