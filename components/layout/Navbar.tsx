@@ -44,7 +44,7 @@ export default function Navbar({ onMenuToggle }: NavbarProps) {
               </svg>
             </button>
           )}
-          <Link href="/">
+          <Link href="/login">
             <Image
               src="/images/brand/logo/logo-primary.png"
               alt="Semente de Ogum"
