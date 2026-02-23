@@ -515,7 +515,7 @@ export default function EditExamPage() {
 
               <Button
                 onClick={handleAddOrUpdateQuestion}
-                className="btn-primary"
+                variant="principal"
               >
                 {editingIndex !== null
                   ? "Salvar Alterações"

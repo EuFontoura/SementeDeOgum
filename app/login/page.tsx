@@ -68,7 +68,7 @@ export default function LoginPage() {
           required
         />
         {error && <p className="text-center text-sm text-red-500">{error}</p>}
-        <Button type="submit" loading={loading} className="btn-primary">
+        <Button type="submit" loading={loading} variant="principal">
           Entrar
         </Button>
         <Link

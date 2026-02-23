@@ -141,7 +141,7 @@ export default function RegisterPage() {
           />
         )}
         {error && <p className="text-center text-sm text-red-500">{error}</p>}
-        <Button type="submit" className="btn-primary">
+        <Button type="submit" variant="principal">
           Cadastrar
         </Button>
       </form>
