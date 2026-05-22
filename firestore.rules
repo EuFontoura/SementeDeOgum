@@ -26,42 +26,36 @@ service cloud.firestore {
     match /exams/{examId} {
       allow read: if isAuth() && (
         (userRole() == 'student' && resource.data.status == 'published') ||
-        (userRole() == 'teacher' && resource.data.createdBy == request.auth.uid)
+        (userRole() == 'teacher')
       );
       allow create: if isAuth() && userRole() == 'teacher'
         && request.resource.data.createdBy == request.auth.uid;
-      allow update: if isAuth() && userRole() == 'teacher'
-        && resource.data.createdBy == request.auth.uid;
-      allow delete: if isAuth() && userRole() == 'teacher'
-        && resource.data.createdBy == request.auth.uid;
+      allow update: if isAuth() && userRole() == 'teacher';
+      allow delete: if isAuth() && userRole() == 'teacher';
     }
 
     // ── Questions ──────────────────────────────────────────────
     match /questions/{questionId} {
       allow read: if isAuth() && (
         (userRole() == 'student' && examDoc(resource.data.examId).status == 'published') ||
-        (userRole() == 'teacher' && examDoc(resource.data.examId).createdBy == request.auth.uid)
+        (userRole() == 'teacher')
       );
-      allow create: if isAuth() && userRole() == 'teacher'
-        && examDoc(request.resource.data.examId).createdBy == request.auth.uid;
-      allow update: if isAuth() && userRole() == 'teacher'
-        && examDoc(resource.data.examId).createdBy == request.auth.uid;
-      allow delete: if isAuth() && userRole() == 'teacher'
-        && examDoc(resource.data.examId).createdBy == request.auth.uid;
+      allow create: if isAuth() && userRole() == 'teacher';
+      allow update: if isAuth() && userRole() == 'teacher';
+      allow delete: if isAuth() && userRole() == 'teacher';
     }
 
     // ── Answers ────────────────────────────────────────────────
     match /answers/{answerId} {
       allow read: if isAuth() && (
         (userRole() == 'student' && resource.data.userId == request.auth.uid) ||
-        (userRole() == 'teacher' && examDoc(resource.data.examId).createdBy == request.auth.uid)
+        (userRole() == 'teacher')
       );
       allow create: if isAuth() && userRole() == 'student'
         && request.resource.data.userId == request.auth.uid;
       allow update: if isAuth() && userRole() == 'student'
         && resource.data.userId == request.auth.uid;
-      allow delete: if isAuth() && userRole() == 'teacher'
-        && examDoc(resource.data.examId).createdBy == request.auth.uid;
+      allow delete: if isAuth() && userRole() == 'teacher';
     }
 
     // ── Results ────────────────────────────────────────────────
@@ -72,18 +66,17 @@ service cloud.firestore {
       allow get: if isAuth() && (
         resource == null ||
         (userRole() == 'student' && resource.data.userId == request.auth.uid) ||
-        (userRole() == 'teacher' && examDoc(resource.data.examId).createdBy == request.auth.uid)
+        (userRole() == 'teacher')
       );
       allow list: if isAuth() && (
         (userRole() == 'student' && resource.data.userId == request.auth.uid) ||
-        (userRole() == 'teacher' && examDoc(resource.data.examId).createdBy == request.auth.uid)
+        (userRole() == 'teacher')
       );
       allow create: if isAuth() && userRole() == 'student'
         && request.resource.data.userId == request.auth.uid;
       allow update: if isAuth() && userRole() == 'student'
         && resource.data.userId == request.auth.uid;
-      allow delete: if isAuth() && userRole() == 'teacher'
-        && examDoc(resource.data.examId).createdBy == request.auth.uid;
+      allow delete: if isAuth() && userRole() == 'teacher';
     }
   }
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { getCollection, where } from "@/lib/firestore";
+import { getCollection, where, orderBy } from "@/lib/firestore";
 import Badge from "@/components/ui/Badge";
 import Card from "@/components/ui/Card";
 import Skeleton from "@/components/ui/Skeleton";
@@ -26,7 +26,7 @@ export default function TeacherDashboard() {
     async function fetchExams() {
       const examsData = await getCollection<Exam>(
         "exams",
-        where("createdBy", "==", user!.uid)
+        orderBy("createdAt", "desc")
       );
 
       const withStats: ExamWithStats[] = await Promise.all(
